@@ -3,7 +3,7 @@ import { useUserStore } from '../stores/user'
 import HomeView from '../views/HomeView.vue'
 
 // 引入管理组件
-import UserManage from '../components/UserManage.vue'
+import UserManage from '../components/UserManager/UserManage.vue'
 import CategoryManage from '../components/CategoryManage.vue'
 import DishManage from '../components/DishManage.vue'
 import OrderManage from '../components/OrderManage.vue'
