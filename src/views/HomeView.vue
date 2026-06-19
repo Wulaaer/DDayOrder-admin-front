@@ -1,4 +1,27 @@
 <script setup>
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
+import { ref } from 'vue'
+
+const router = useRouter()
+const userStore = useUserStore()
+
+// 控制下拉菜单显示
+const showUserMenu = ref(false)
+
+// 修改密码
+const toResetPwd = () => {
+  showUserMenu.value = false
+  router.push('/reset-pwd') // 后续自己建页面
+}
+
+// 退出登录
+const logout = () => {
+  userStore.clearUserInfo()
+  showUserMenu.value = false
+  router.push('/login')
+}
+
 const menus = [
   { key: 'user', name: '用户管理', icon: '👤' },
   { key: 'category', name: '分类管理', icon: '📁' },
@@ -12,7 +35,17 @@ const menus = [
   <div class="layout">
     <header class="header">
       <div class="logo">订餐后台管理系统</div>
-      <div class="user-info">你好，管理员</div>
+
+      <!-- 用户名 + 下拉菜单 -->
+      <div class="user-wrapper" @click.stop="showUserMenu = !showUserMenu">
+        <div class="user-info">你好，{{ userStore.name }}</div>
+
+        <!-- 下拉框 -->
+        <div v-if="showUserMenu" class="user-dropdown">
+          <div class="dropdown-item" @click="toResetPwd">修改密码</div>
+          <div class="dropdown-item" @click="logout">退出登录</div>
+        </div>
+      </div>
     </header>
 
     <div class="container">
@@ -46,6 +79,29 @@ const menus = [
   flex-direction: column;
   overflow: hidden;
   background: #f5f7fa;
+}
+
+/* 用户名称点击区域 */
+.user-wrapper {
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* 下拉菜单 */
+.user-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  width: 140px;
+  background: #fff;
+  color: #333;
+  border: 1px solid #e5e6eb;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  z-index: 99;
 }
 
 .header {

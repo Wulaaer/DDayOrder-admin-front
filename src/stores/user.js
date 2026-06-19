@@ -4,19 +4,19 @@ export const useUserStore = defineStore('user', {
   state: () => {
     return {
       token: '',
-      username: '',
+      name: '',
     }
   },
   actions: {
     // 存储用户信息和token
     setUserInfo(data) {
       this.token = data.token
-      this.username = data.username
+      this.name = data.name
     },
     // 退出登录清空信息
     clearUserInfo() {
       this.token = ''
-      this.username = ''
+      this.name = ''
     },
   },
   // 开启本地持久化，自动存入localStorage

@@ -22,6 +22,8 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
       // 子路由：内容区显示的页面
+      // 加上这一行
+      redirect: '/order',
       children: [
         { path: 'user', component: UserManage },
         { path: 'category', component: CategoryManage },
@@ -37,6 +39,11 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue'),
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      component: () => import('../views/NotFound.vue'),
     },
   ],
 })
