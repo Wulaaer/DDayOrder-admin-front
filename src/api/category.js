@@ -44,3 +44,11 @@ export function toggleCategoryStatus(id, status) {
     params: { id },
   })
 }
+
+// 查询分类列表接口
+export function getCategoryList() {
+  return request({
+    url: '/admin/category/list',
+    method: 'get',
+  })
+}

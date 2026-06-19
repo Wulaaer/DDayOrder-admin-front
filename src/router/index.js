@@ -3,9 +3,9 @@ import { useUserStore } from '../stores/user'
 import HomeView from '../views/HomeView.vue'
 
 // 引入管理组件
-import UserManage from '../components/UserManager/UserManage.vue'
-import CategoryManage from '../components/CategoryManager/CategoryManage.vue'
-import DishManage from '../components/DishManage.vue'
+import UserManage from '../components/UserManage/UserManage.vue'
+import CategoryManage from '../components/CategoryManage/CategoryManage.vue'
+import DishManage from '../components/DishManage/DishManage.vue'
 import OrderManage from '../components/OrderManage.vue'
 import DataManage from '../components/DataStatistic.vue'
 
