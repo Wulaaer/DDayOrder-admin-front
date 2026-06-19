@@ -3,19 +3,26 @@
     <div class="login-container">
       <div class="login-panel">
         <h3>订餐后台管理系统</h3>
-        <p class="subtitle">Restaurant Management System</p>
 
         <el-form class="login-form" :model="loginForm" label-width="60px">
           <el-form-item label="账号">
-            <el-input v-model="loginForm.username" placeholder="请输入管理员账号" size="large" />
+            <el-input
+              ref="usernameRef"
+              v-model="loginForm.username"
+              placeholder="请输入管理员账号"
+              size="large"
+              @keyup.enter="focusPassword"
+            />
           </el-form-item>
 
           <el-form-item label="密码">
             <el-input
+              ref="passwordRef"
               v-model="loginForm.password"
               type="password"
               placeholder="请输入密码"
               size="large"
+              @keyup.enter="login"
             />
           </el-form-item>
 
@@ -31,7 +38,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { loginApi } from '@/api/employee'
 import { useUserStore } from '@/stores/user'
@@ -45,14 +52,40 @@ const loginForm = ref({
   password: '',
 })
 
+// 账号输入框 ref
+const usernameRef = ref(null)
+// 密码输入框 ref
+const passwordRef = ref(null)
+
+// 页面加载完成后自动聚焦账号
+onMounted(() => {
+  usernameRef.value.focus()
+})
+
+// 回车跳到密码框
+const focusPassword = () => {
+  passwordRef.value.focus()
+}
+
+// 登录
 const login = async () => {
-  const res = await loginApi(loginForm.value)
-  if (res.code === 1) {
-    userStore.setUserInfo(res.data)
-    ElMessage.success('登录成功')
-    router.push('/')
-  } else {
-    ElMessage.error(res.msg)
+  if (!loginForm.value.username || !loginForm.value.password) {
+    ElMessage.warning('请输入账号和密码')
+    return
+  }
+
+  try {
+    const res = await loginApi(loginForm.value)
+    if (res.code === 1) {
+      userStore.setUserInfo(res.data)
+      ElMessage.success('登录成功')
+      router.push('/')
+    } else {
+      ElMessage.error(res.msg)
+    }
+  } catch (err) {
+    ElMessage.error('登录异常，请稍后重试')
+    console.error('登录异常:', err)
   }
 }
 </script>
