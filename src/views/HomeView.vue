@@ -26,6 +26,7 @@ const menus = [
   { key: 'user', name: '用户管理', icon: '👤' },
   { key: 'category', name: '分类管理', icon: '📁' },
   { key: 'dish', name: '菜品管理', icon: '🍽️' },
+  { key: 'flavor', name: '口味模板', icon: '🍜' },
   { key: 'order', name: '订单管理', icon: '📋' },
   { key: 'data', name: '数据统计', icon: '📊' },
 ]

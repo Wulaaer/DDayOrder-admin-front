@@ -6,6 +6,7 @@ import HomeView from '../views/HomeView.vue'
 import UserManage from '../components/UserManage/UserManage.vue'
 import CategoryManage from '../components/CategoryManage/CategoryManage.vue'
 import DishManage from '../components/DishManage/DishManage.vue'
+import FlavorManage from '../components/FlavorManage/FlavorManage.vue'
 import OrderManage from '../components/OrderManage.vue'
 import DataManage from '../components/DataStatistic.vue'
 
@@ -28,6 +29,7 @@ const router = createRouter({
         { path: 'user', component: UserManage },
         { path: 'category', component: CategoryManage },
         { path: 'dish', component: DishManage },
+        { path: 'flavor', component: FlavorManage },
         { path: 'order', component: OrderManage },
         { path: 'data', component: DataManage },
       ],
