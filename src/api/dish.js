@@ -9,6 +9,14 @@ export function getDishPage(params) {
   })
 }
 
+// 根据id查询菜品详情接口
+export function getDishById(id) {
+  return request({
+    url: `/admin/dish/${id}`,
+    method: 'get',
+  })
+}
+
 // 根据分类id查询菜品
 export function getDishesByCategoryId(categoryId) {
   return request({

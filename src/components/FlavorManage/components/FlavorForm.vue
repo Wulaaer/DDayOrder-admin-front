@@ -1,24 +1,27 @@
 <template>
   <el-dialog v-model="localVisible" :title="isAdd ? '新增口味' : '编辑口味'" width="600px">
-    <el-form :model="formData" label-width="100px">
-      <el-form-item label="口味名称">
-        <el-input v-model="formData.name" placeholder="例如：甜度、冰度、辣度" />
-      </el-form-item>
+    <!-- 关键：给内部加固定上下间距，强制统一样式 -->
+    <div class="flavor-form-inner">
+      <el-form :model="formData" label-width="100px">
+        <el-form-item label="口味名称">
+          <el-input v-model="formData.name" placeholder="例如：甜度、冰度、辣度" />
+        </el-form-item>
 
-      <el-form-item label="可选值">
-        <div style="display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center">
-          <!-- 第1行：输入框 + 添加按钮 -->
-          <el-input v-model="valueList[0]" placeholder="请输入选项" />
-          <el-button size="small" type="primary" @click="addItem">+ 添加选项</el-button>
+        <el-form-item label="可选值" label-suffix=" " style="margin-bottom: 10px">
+          <div
+            style="display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center"
+          >
+            <el-input v-model="valueList[0]" placeholder="请输入选项" />
+            <el-button size="small" type="primary" @click="addItem">+ 添加选项</el-button>
 
-          <!-- 第2行开始：输入框 + 删除按钮 -->
-          <template v-for="(item, idx) in valueList.slice(1)" :key="idx">
-            <el-input v-model="valueList[idx + 1]" placeholder="请输入选项" />
-            <el-button size="small" type="danger" @click="delItem(idx + 1)">删除</el-button>
-          </template>
-        </div>
-      </el-form-item>
-    </el-form>
+            <template v-for="(item, idx) in valueList.slice(1)" :key="idx">
+              <el-input v-model="valueList[idx + 1]" placeholder="请输入选项" />
+              <el-button size="small" type="danger" @click="delItem(idx + 1)">删除</el-button>
+            </template>
+          </div>
+        </el-form-item>
+      </el-form>
+    </div>
 
     <template #footer>
       <el-button @click="close">取消</el-button>
@@ -33,17 +36,23 @@ import { ref, reactive, watch } from 'vue'
 const props = defineProps({
   visible: Boolean,
   isAdd: Boolean,
-  rowData: Object,
+  // rowData 默认空对象，防止接收 null
+  rowData: {
+    type: Object,
+    default: () => ({}),
+  },
 })
 
 const emit = defineEmits(['update:visible', 'success'])
 
 const localVisible = ref(false)
+
 watch(
   () => props.visible,
   (v) => (localVisible.value = v),
   { immediate: true },
 )
+
 watch(localVisible, (v) => emit('update:visible', v))
 
 // 提交给后端的结构
@@ -99,3 +108,11 @@ watch(
 
 const close = () => (localVisible.value = false)
 </script>
+
+<style scoped>
+.flavor-form-inner {
+  padding: 8px 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+</style>

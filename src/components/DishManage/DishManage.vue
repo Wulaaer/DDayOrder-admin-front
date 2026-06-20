@@ -60,6 +60,8 @@
       v-model:visible="formVisible"
       :is-add="isAdd"
       :row-data="currentRow"
+      :category-list="categoryList"
+      :flavor-list="flavorList"
       @success="handleSubmit"
     />
   </div>
@@ -69,8 +71,17 @@
 import { ref, reactive } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import DishForm from './components/DishForm.vue'
-import { getDishPage, addDish, updateDish, deleteDish, toggleDishStatus } from '@/api/dish'
+import {
+  getDishPage,
+  addDish,
+  updateDish,
+  deleteDish,
+  toggleDishStatus,
+  getDishById,
+} from '@/api/dish'
 import { uploadImage } from '@/api/common'
+import { getCategoryList } from '@/api/category'
+import { getFlavorList } from '@/api/flavor'
 
 // 接口占位
 const api = {
@@ -79,6 +90,9 @@ const api = {
   update: (data) => updateDish(data),
   delete: (id) => deleteDish(id),
   status: (id, status) => toggleDishStatus(id, status),
+  getCategoryList: () => getCategoryList(),
+  getFlavorList: () => getFlavorList(),
+  getDishById: (id) => getDishById(id),
 }
 
 const query = reactive({ name: '' })
@@ -90,8 +104,11 @@ const list = ref([])
 const formVisible = ref(false)
 const isAdd = ref(true)
 const currentRow = ref({})
+const categoryList = ref([])
+const flavorList = ref([])
 
 const getList = async () => {
+  // 分页查询菜品列表
   const res = await api.page({
     ...query,
     page: page.value,
@@ -100,6 +117,17 @@ const getList = async () => {
   if (res.code === 1) {
     list.value = res.data.records
     total.value = res.data.total
+  }
+
+  // 加载分类列表
+  const categoryRes = await api.getCategoryList()
+  if (categoryRes.code === 1) {
+    categoryList.value = categoryRes.data
+  }
+  // 加载口味列表
+  const flavorRes = await api.getFlavorList()
+  if (flavorRes.code === 1) {
+    flavorList.value = flavorRes.data
   }
 }
 
@@ -114,8 +142,12 @@ const openAdd = () => {
   formVisible.value = true
 }
 const openEdit = (row) => {
+  api.getDishById(row.id).then((res) => {
+    if (res.code === 1) {
+      currentRow.value = res.data
+    }
+  })
   isAdd.value = false
-  currentRow.value = row
   formVisible.value = true
 }
 
