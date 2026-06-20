@@ -7,6 +7,19 @@
         style="width: 200px; margin-right: 10px"
       />
 
+      <el-select
+        v-model="query.categoryId"
+        placeholder="菜品分类"
+        style="width: 200px; margin-right: 10px"
+      >
+        <el-option
+          v-for="item in categoryList"
+          :key="item.id"
+          :label="item.name"
+          :value="item.id"
+        />
+      </el-select>
+
       <el-button type="primary" @click="getList">查询</el-button>
       <el-button @click="resetQuery">重置</el-button>
       <el-button type="success" style="margin-left: 10px" @click="openAdd">新增菜品</el-button>
@@ -95,7 +108,10 @@ const api = {
   getDishById: (id) => getDishById(id),
 }
 
-const query = reactive({ name: '' })
+const query = reactive({
+  name: '',
+  categoryId: '',
+})
 const page = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
