@@ -129,6 +129,7 @@ watch(localVisible, (val) => emit('update:visible', val))
 const formData = reactive({
   id: undefined,
   name: '',
+  status: 1,
   categoryId: '',
   price: 0.0,
   image: '',

@@ -5,15 +5,28 @@
     </div>
 
     <el-table :data="list" border stripe>
-      <el-table-column label="口味名称" prop="name" />
+      <el-table-column label="口味名称" prop="name" width="150" />
+
       <el-table-column label="可选值" min-width="250">
         <template #default="{ row }">
-          <span v-for="(item, idx) in JSON.parse(row.value)" :key="idx">
+          <span v-for="(item, idx) in safeParse(row.value)" :key="idx">
             <el-tag size="small" style="margin-right: 4px">{{ item }}</el-tag>
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="操作">
+
+      <!-- 新增：价格列 -->
+      <el-table-column label="加价金额" min-width="200">
+        <template #default="{ row }">
+          <span v-for="(item, idx) in safeParse(row.price)" :key="idx">
+            <el-tag size="small" type="warning" style="margin-right: 4px">
+              ￥{{ item || '0' }}
+            </el-tag>
+          </span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="操作" width="180">
         <template #default="{ row }">
           <div style="display: flex; gap: 6px">
             <el-button size="small" @click="openEdit(row)">编辑</el-button>
@@ -38,7 +51,6 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import FlavorForm from './components/FlavorForm.vue'
 import { getFlavorList, addFlavor, updateFlavor, deleteFlavor } from '@/api/flavor'
 
-// 接口占位
 const api = {
   list: () => getFlavorList(),
   add: (data) => addFlavor(data),
@@ -50,6 +62,15 @@ const list = ref([])
 const formVisible = ref(false)
 const isAdd = ref(true)
 const currentRow = ref({})
+
+// 安全解析 JSON 工具函数
+const safeParse = (str) => {
+  try {
+    return JSON.parse(str || '[]')
+  } catch {
+    return []
+  }
+}
 
 const getList = async () => {
   const res = await api.list()

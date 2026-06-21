@@ -1,6 +1,5 @@
 <template>
-  <el-dialog v-model="localVisible" :title="isAdd ? '新增口味' : '编辑口味'" width="600px">
-    <!-- 关键：给内部加固定上下间距，强制统一样式 -->
+  <el-dialog v-model="localVisible" :title="isAdd ? '新增口味' : '编辑口味'" width="700px">
     <div class="flavor-form-inner">
       <el-form :model="formData" label-width="100px">
         <el-form-item label="口味名称">
@@ -8,14 +7,21 @@
         </el-form-item>
 
         <el-form-item label="可选值" label-suffix=" " style="margin-bottom: 10px">
-          <div
-            style="display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center"
-          >
-            <el-input v-model="valueList[0]" placeholder="请输入选项" />
-            <el-button size="small" type="primary" @click="addItem">+ 添加选项</el-button>
+          <div class="flavor-grid">
+            <!-- 表头 -->
+            <div class="grid-header">选项名称</div>
+            <div class="grid-header">加价金额</div>
+            <div class="grid-header">操作</div>
 
+            <!-- 第一行（带添加按钮） -->
+            <el-input v-model="valueList[0]" placeholder="请输入选项" />
+            <el-input v-model="priceList[0]" placeholder="0" />
+            <el-button size="small" type="primary" @click="addItem">+ 添加</el-button>
+
+            <!-- 动态渲染后续行 -->
             <template v-for="(item, idx) in valueList.slice(1)" :key="idx">
               <el-input v-model="valueList[idx + 1]" placeholder="请输入选项" />
+              <el-input v-model="priceList[idx + 1]" placeholder="0" />
               <el-button size="small" type="danger" @click="delItem(idx + 1)">删除</el-button>
             </template>
           </div>
@@ -36,15 +42,10 @@ import { ref, reactive, watch } from 'vue'
 const props = defineProps({
   visible: Boolean,
   isAdd: Boolean,
-  // rowData 默认空对象，防止接收 null
-  rowData: {
-    type: Object,
-    default: () => ({}),
-  },
+  rowData: { type: Object, default: () => ({}) },
 })
 
 const emit = defineEmits(['update:visible', 'success'])
-
 const localVisible = ref(false)
 
 watch(
@@ -52,34 +53,36 @@ watch(
   (v) => (localVisible.value = v),
   { immediate: true },
 )
-
 watch(localVisible, (v) => emit('update:visible', v))
 
 // 提交给后端的结构
-const formData = reactive({
-  id: undefined,
-  name: '',
-  value: '[]',
-})
+const formData = reactive({ id: undefined, name: '', value: '[]', price: '[]' })
 
 // 前端友好编辑数组
 const valueList = ref([])
+const priceList = ref([])
 
-// 添加选项
-const addItem = () => valueList.value.push('')
-// 删除选项
-const delItem = (idx) => valueList.value.splice(idx, 1)
+const addItem = () => {
+  valueList.value.push('')
+  priceList.value.push('')
+}
+
+const delItem = (idx) => {
+  valueList.value.splice(idx, 1)
+  priceList.value.splice(idx, 1)
+}
 
 // 提交时转成 JSON
 const submit = () => {
-  // 过滤空项
   const arr = valueList.value.filter((s) => s && s.trim())
+  const pArr = priceList.value.filter((s) => s !== undefined && s !== '')
   formData.value = JSON.stringify(arr)
+  formData.price = JSON.stringify(pArr)
   emit('success', { ...formData })
   close()
 }
 
-// 编辑回填：解析 JSON 成数组
+// 编辑回填
 watch(
   () => props.rowData,
   (row) => {
@@ -88,8 +91,10 @@ watch(
     formData.name = row.name || ''
     try {
       valueList.value = JSON.parse(row.value || '[]')
+      priceList.value = JSON.parse(row.price || '[]')
     } catch {
       valueList.value = []
+      priceList.value = []
     }
   },
   { deep: true },
@@ -102,6 +107,7 @@ watch(
     if (v && props.isAdd) {
       formData.name = ''
       valueList.value = ['']
+      priceList.value = ['']
     }
   },
 )
@@ -114,5 +120,18 @@ const close = () => (localVisible.value = false)
   padding: 8px 0;
   font-size: 14px;
   line-height: 1.6;
+}
+
+.flavor-grid {
+  display: grid;
+  grid-template-columns: 1fr 120px auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.grid-header {
+  font-weight: bold;
+  color: #606266;
+  font-size: 13px;
 }
 </style>
