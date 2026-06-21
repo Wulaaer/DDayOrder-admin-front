@@ -17,6 +17,26 @@
         </el-select>
       </el-form-item>
 
+      <el-form-item label="菜品排序">
+        <el-input v-model="formData.sortInCategory" placeholder="请输入排序 越小越靠前" />
+      </el-form-item>
+
+      <!-- 分类下拉框 -->
+      <el-form-item label="搭配分类">
+        <el-select
+          v-model="formData.recCategoryId"
+          placeholder="请选择推荐搭配分类"
+          style="width: 100%"
+        >
+          <el-option
+            v-for="item in categoryList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
+      </el-form-item>
+
       <el-form-item label="口味">
         <!-- 选择器 + 按钮 一行 -->
         <div
@@ -40,9 +60,11 @@
             :key="idx"
             style="display: flex; align-items: center; gap: 8px"
           >
-            <div style="flex: 1; padding: 4px 10px; border: 1px solid #eee; border-radius: 4px">
-              {{ f.name }}: {{ JSON.parse(f.value || '[]').join(' / ') }}
+            <!-- 核心修改：增加 flex: 1, width: 0 和单行省略样式 -->
+            <div class="flavor-text-ellipsis" :title="formatFlavorText(f)">
+              {{ formatFlavorText(f) }}
             </div>
+
             <el-button @click="editFlavor(idx)">编辑</el-button>
             <el-button type="danger" @click="formData.flavors.splice(idx, 1)">删除</el-button>
           </div>
@@ -131,6 +153,8 @@ const formData = reactive({
   name: '',
   status: 1,
   categoryId: '',
+  sortInCategory: 0,
+  recCategoryId: '',
   price: 0.0,
   image: '',
   flavors: [],
@@ -187,6 +211,24 @@ const handleFlavorEditSuccess = (flavor) => {
   flavorFormVisible.value = false
 }
 
+// 格式化口味显示文本（包含价格）
+const formatFlavorText = (f) => {
+  try {
+    const values = JSON.parse(f.value || '[]')
+    const prices = JSON.parse(f.price || '[]')
+
+    // 将口味和价格拼接，例如：无糖(0元) / 半糖(2元)
+    const combined = values.map((v, i) => {
+      const p = prices[i] || '0'
+      return `${v}(${p}元)`
+    })
+
+    return `${f.name}: ${combined.join(' / ')}`
+  } catch {
+    return `${f.name}: 解析失败`
+  }
+}
+
 // 图片预览相关
 const fileInput = ref(null)
 const localFile = ref(null)
@@ -210,7 +252,20 @@ const submit = () => {
   close()
 }
 
-const close = () => (localVisible.value = false)
+const close = () => {
+  localVisible.value = false
+  // 重置表单数据和预览状态
+  formData.id = undefined
+  formData.name = ''
+  formData.categoryId = ''
+  formData.sortInCategory = 0
+  formData.recCategoryId = ''
+  formData.price = 0.0
+  formData.image = ''
+  formData.flavors = []
+  previewUrl.value = ''
+  localFile.value = null
+}
 
 // 回填编辑
 watch(
@@ -243,3 +298,20 @@ watch(
   },
 )
 </script>
+
+<style scoped>
+.flavor-text-ellipsis {
+  flex: 1;
+  width: 0; /* 关键：配合 flex: 1 强制元素不超出父容器，从而触发省略号 */
+  padding: 4px 10px;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #606266;
+
+  /* 单行溢出省略三剑客 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>

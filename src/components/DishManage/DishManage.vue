@@ -33,6 +33,8 @@
       </el-table-column>
       <el-table-column label="菜品名称" prop="name" />
       <el-table-column label="分类名称" prop="categoryName" width="100" />
+      <el-table-column label="搭配分类" prop="recCategoryName" width="100" />
+      <el-table-column label="排序" prop="sortInCategory" width="100" />
       <el-table-column label="价格" prop="price" width="100" />
       <el-table-column label="状态" width="100">
         <template #default="{ row }">
