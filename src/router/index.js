@@ -8,7 +8,7 @@ import CategoryManage from '../components/CategoryManage/CategoryManage.vue'
 import DishManage from '../components/DishManage/DishManage.vue'
 import FlavorManage from '../components/FlavorManage/FlavorManage.vue'
 import OrderManage from '../components/OrderManage/OrderManage.vue'
-import DataManage from '../components/DataStatistic.vue'
+import DataManage from '../components/DataStatistic/DataStatistic.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
