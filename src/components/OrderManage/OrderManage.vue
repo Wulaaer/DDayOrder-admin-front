@@ -95,6 +95,8 @@ import { ref, reactive, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getOrderPage, rejectOrder } from '@/api/order' // 4. 导入接口
 import OrderDetail from './components/OrderDetail.vue' // 5. 导入订单详情组件
+import { onMounted, onUnmounted } from 'vue'
+import { wsClient } from '@/utils/websocket'
 
 const query = reactive({
   number: null,
@@ -109,6 +111,31 @@ const page = ref(1)
 const pageSize = ref(10)
 const list = ref([])
 const total = ref(0)
+
+let unsubscribe = null
+
+onMounted(() => {
+  // 订阅WebSocket消息
+  unsubscribe = wsClient.subscribe((msg) => {
+    // 假设后端推送格式: { type: 'NEW_ORDER', orderId: 'xxx' }
+    if (msg.type === 1) {
+      // 1. 弹出提示音/通知
+      // ElNotification({
+      //   title: '🔔 新订单提醒',
+      //   message: `您有一个新订单，请及时处理！`,
+      //   type: 'success',
+      //   duration: 5000
+      // });
+
+      // 2. 自动刷新当前列表（如果当前在"已支付"或"全部"标签页）
+      if (activeStatus.value === '2' || activeStatus.value === 'all') {
+        getPage()
+      }
+    }
+  })
+})
+
+onUnmounted(() => unsubscribe?.())
 
 const detailVisible = ref(false)
 const currentOrderId = ref(null)

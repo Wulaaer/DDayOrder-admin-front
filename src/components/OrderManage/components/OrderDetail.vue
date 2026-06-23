@@ -25,7 +25,7 @@
       <div style="margin-top: 20px">
         <h4 style="margin-bottom: 10px">菜品明细</h4>
         <el-table :data="detail.orderDetailList || []" border size="small">
-          <el-table-column label="菜品名称" prop="dishName" show-overflow-tooltip />
+          <el-table-column label="菜品名称" prop="name" show-overflow-tooltip />
           <el-table-column label="口味/规格" prop="dishFlavor" show-overflow-tooltip>
             <template #default="{ row }">
               {{ row.dishFlavor || '默认' }}
